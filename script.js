@@ -161,7 +161,15 @@ function computeRCRI(data) {
   if (score === 1) text = 'Mild increased risk';
   if (score === 2) text = 'Moderate risk';
   if (score >= 3) text = 'High risk';
-  return { score, text };
+
+  // Map RCRI points to approximate percentage risk of major cardiac complication
+  let percent = 0.4;
+  if (score === 0) percent = 0.4;
+  else if (score === 1) percent = 0.9;
+  else if (score === 2) percent = 6.6;
+  else if (score >= 3) percent = 11.0;
+
+  return { score, percent, text };
 }
 
 function computeGupta(data) {
@@ -283,7 +291,7 @@ function calculateAll() {
   const caprini = computeCaprini(state);
 
   elements.rcriScore.textContent = rcri.score;
-  elements.rcriText.textContent = rcri.text;
+  elements.rcriText.textContent = `${rcri.text} — ≈${rcri.percent.toFixed(1)}% major cardiac complication`;
   elements.guptaScore.textContent = gupta.score;
   elements.guptaText.textContent = gupta.text;
   elements.nsqipScore.textContent = nsqip.score;
