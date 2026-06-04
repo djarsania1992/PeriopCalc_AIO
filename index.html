@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Static perioperative risk calculator for RCRI, Gupta, DASI, ARISCAT, STOP-BANG, and Caprini scores." />
     <title>Perioperative Risk Calculator</title>
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -18,8 +19,12 @@
     <main>
       <section class="intro-card">
         <p>Enter the patient and surgery information below. Scores update automatically for each risk calculator. This tool is for general reference only and not a replacement for clinical judgment. See <a href="README.html" target="_blank" rel="noopener noreferrer" aria-label="Open documentation" title="Open documentation">Documentation</a> for calculator details. If additional risk stratification is needed, follow the <a href="https://riskcalculator.facs.org/RiskCalculator/PatientInfo.jsp" target="_blank" rel="noopener noreferrer" aria-label="Open the full NSQIP ACS Risk Calculator" title="Open the full NSQIP ACS Risk Calculator">full NSQIP ACS calculator</a>.</p>
+      </section>
+
+      <section class="calculator-grid">
         <article class="panel inputs">
           <h2>Patient &amp; Surgery Inputs</h2>
+          <div id="validationMessage" class="validation-message" role="status" aria-live="polite"></div>
 
           <div class="field-row">
             <label for="age">Age</label>
@@ -64,7 +69,7 @@
 
           <div class="field-row">
             <label for="neck">Neck circumference (cm)</label>
-            <input id="neck" type="number" min="20" max="60" step="0.1" />
+            <input id="neck" type="number" value="35" min="20" max="60" step="0.1" />
           </div>
 
           <div class="field-row">
@@ -92,7 +97,8 @@
             <select id="surgeryDuration">
               <option value="">Select...</option>
               <option value="short">< 2 hours</option>
-              <option value="long">> 2 hours</option>
+              <option value="medium">2-3 hours</option>
+              <option value="long">> 3 hours</option>
             </select>
           </div>
 
@@ -119,11 +125,17 @@
           <div class="field-row checkbox-row">
             <label><input id="recentRespInfection" type="checkbox" /> Respiratory infection in last month</label>
           </div>
-          <div class="field-row checkbox-row">
-            <label><input id="hypoxemia" type="checkbox" /> SpO₂ < 96%</label>
+          <div class="field-row">
+            <label for="spO2">Preoperative SpO₂</label>
+            <select id="spO2">
+              <option value="">Select...</option>
+              <option value=">=96">≥96%</option>
+              <option value="91-95">91–95%</option>
+              <option value="<=90">≤90%</option>
+            </select>
           </div>
           <div class="field-row checkbox-row">
-            <label><input id="preopAnemia" type="checkbox" /> Hb < 10 g/dL</label>
+            <label><input id="preopAnemia" type="checkbox" /> Hb ≤ 10 g/dL</label>
           </div>
 
           <h3>Sleep Apnea / STOP-BANG</h3>
@@ -139,8 +151,6 @@
           <div class="field-row checkbox-row">
             <label><input id="hypertension" type="checkbox" /> Hypertension</label>
           </div>
-
-          <h3>Thrombosis Prevention</h3>
         </article>
 
         <article class="panel results">
@@ -158,13 +168,14 @@
             </section>
             <section class="result-card">
               <h3>DASI</h3>
-              <p><strong id="dasiScore">0</strong></p>
-              <p id="dasiText">Estimated METs</p>
+              <p><strong id="dasiPoints">0</strong> points</p>
+              <p><strong id="dasiMets">0.00</strong> METs</p>
             </section>
             <section class="result-card">
               <h3>ARISCAT</h3>
               <p><strong id="ariscatScore">0</strong></p>
-              <p id="ariscatText">Post-op pulmonary risk</p>
+              <p id="ariscatText">Risk category</p>
+              <p id="ariscatPct">0% PPC risk</p>
             </section>
             <section class="result-card">
               <h3>STOP-BANG</h3>
