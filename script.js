@@ -64,8 +64,6 @@ const elements = {
   rcriText: document.getElementById('rcriText'),
   guptaScore: document.getElementById('guptaScore'),
   guptaText: document.getElementById('guptaText'),
-  nsqipScore: document.getElementById('nsqipScore'),
-  nsqipText: document.getElementById('nsqipText'),
   dasiScore: document.getElementById('dasiScore'),
   dasiText: document.getElementById('dasiText'),
   ariscatScore: document.getElementById('ariscatScore'),
@@ -179,8 +177,7 @@ function computeRCRI(data) {
 }
 
 function computeGupta(data) {
-  // Gupta Perioperative Cardiac Risk Calculator
-  // Based on NSQIP data: predicts risk of MI or cardiac arrest
+  // Gupta Perioperative Cardiac Risk Calculator: estimates risk of MI or cardiac arrest
   const intercept = -6.62;
   const ageCoef = 0.027 * data.age;
   let sexCoef = 0;
@@ -196,33 +193,6 @@ function computeGupta(data) {
   if (percent < 1) text = 'Low risk';
   else if (percent < 5) text = 'Moderate risk';
   else text = 'Higher risk';
-  return { score: percent.toFixed(1) + '%', text };
-}
-
-function computeNSQIP(data) {
-  // NSQIP Cardiac Risk Calculator - focuses on cardiac complications
-  let logit = -5.5;
-  if (data.age >= 75) logit += 0.8;
-  else if (data.age >= 70) logit += 0.5;
-  else if (data.age >= 60) logit += 0.2;
-  if (data.asa === 4) logit += 0.9;
-  if (data.asa === 5) logit += 1.4;
-  if (data.asa === 3) logit += 0.4;
-  if (data.functionalStatus !== 'independent') logit += 0.6;
-  if (data.emergency) logit += 0.5;
-  if (data.heartFailure) logit += 0.8;
-  if (data.ischemicHeartDisease) logit += 0.7;
-  if (data.hypertension) logit += 0.3;
-  if (data.creatinine > 1.5) logit += 0.4;
-  if (data.insulinDiabetes) logit += 0.3;
-  if (['intraperitoneal', 'intrathoracic', 'vascular', 'upperAbdominal'].includes(data.surgeryType)) logit += 0.6;
-  if (data.surgeryDuration === 'long') logit += 0.2;
-  const probability = 1 / (1 + Math.exp(-logit));
-  const percent = Math.round(probability * 1000) / 10;
-  let text = 'Estimated cardiac complication risk.';
-  if (percent < 2) text = 'Low cardiac risk.';
-  else if (percent < 5) text = 'Moderate cardiac risk.';
-  else text = 'Higher cardiac risk.';
   return { score: percent.toFixed(1) + '%', text };
 }
 
@@ -304,7 +274,6 @@ function computeCaprini(data) {
 function calculateAll() {
   const rcri = computeRCRI(state);
   const gupta = computeGupta(state);
-  const nsqip = computeNSQIP(state);
   const dasi = computeDASI();
   const ariscat = computeARISCAT(state);
   const stopbang = computeStopBang(state);
@@ -314,8 +283,6 @@ function calculateAll() {
   elements.rcriText.textContent = `${rcri.text} — ≈${rcri.percent.toFixed(1)}% major cardiac complication`;
   elements.guptaScore.textContent = gupta.score;
   elements.guptaText.textContent = gupta.text;
-  elements.nsqipScore.textContent = nsqip.score;
-  elements.nsqipText.textContent = nsqip.text;
   elements.dasiScore.textContent = dasi.score;
   elements.dasiText.textContent = dasi.text;
   elements.ariscatScore.textContent = ariscat.score;
