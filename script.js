@@ -73,22 +73,18 @@ const elements = {
   stopbangScore: document.getElementById('stopbangScore'),
   stopbangText: document.getElementById('stopbangText'),
   capriniScore: document.getElementById('capriniScore'),
+    capriniPercent: document.getElementById('capriniPercent'),
   capriniText: document.getElementById('capriniText'),
 };
 
 const dasiItems = [
-  { id: 'dasiPersonalCare', label: 'Personal care (eat, dress, bathe)', points: 2.75 },
-  { id: 'dasiWalkIndoors', label: 'Walk indoors', points: 2.75 },
-  { id: 'dasiWalkBlock', label: 'Walk one block', points: 3.5 },
-  { id: 'dasiClimbStairs', label: 'Climb one flight of stairs or walk uphill', points: 5.5 },
-  { id: 'dasiRunShort', label: 'Run a short distance', points: 8 },
-  { id: 'dasiLightActivity', label: 'Light recreational activities', points: 4 },
-  { id: 'dasiModerateActivity', label: 'Moderate recreational activities', points: 6 },
-  { id: 'dasiStrenuousSport', label: 'Strenuous sports', points: 7.5 },
-  { id: 'dasiHeavyHousework', label: 'Heavy work around the house', points: 7.5 },
-  { id: 'dasiYardWork', label: 'Yard work or gardening', points: 5.5 },
-  { id: 'dasiSexualActivity', label: 'Sexual activity', points: 5 },
-  { id: 'dasiHeavyLifting', label: 'Lift heavy objects or move furniture', points: 5.5 },
+  { id: 'dasiPersonalCare', label: 'Taking care of self at home (eating, dressing, bathing, using toilet)', mets: 1.0 },
+  { id: 'dasiWalkIndoors', label: 'Walking indoors on level ground', mets: 1.0 },
+  { id: 'dasiWalkBlock', label: 'Walking 1-2 blocks on level ground at normal pace', mets: 2.41 },
+  { id: 'dasiClimbStairs', label: 'Climbing a flight of stairs or walking up a hill', mets: 2.41 },
+  { id: 'dasiLightActivity', label: 'Walking more than 2 blocks but not on hills or stairs', mets: 3.13 },
+  { id: 'dasiModerateActivity', label: 'Moderate recreational activities (golf, bowling, dancing, doubles tennis)', mets: 4.0 },
+  { id: 'dasiStrenuousSport', label: 'Strenuous sports (running, jogging, basketball, singles tennis, football, squash, skiing)', mets: 7.0 },
 ];
 
 const capriniItems = [
@@ -231,14 +227,14 @@ function computeNSQIP(data) {
 }
 
 function computeDASI() {
-  let total = 0;
+  let maxMets = 1.0;
   dasiItems.forEach(item => {
-    if (state[item.id]) total += item.points;
+    if (state[item.id]) {
+      maxMets = Math.max(maxMets, item.mets);
+    }
   });
-  const vo2 = 0.43 * total + 9.6;
-  const mets = vo2 / 3.5;
-  let score = mets.toFixed(1);
-  return { score, text: `${score} METs (functional capacity estimate)` };
+  const score = maxMets.toFixed(2);
+  return { score, text: `${score} METs (functional capacity)` };
 }
 
 function computeARISCAT(data) {
@@ -291,10 +287,18 @@ function computeCaprini(data) {
   if (data.activeCancer) score += 2;
   if (data.historyVTE) score += 3;
   let text = 'Low risk';
-  if (score >= 5) text = 'Highest risk';
-  else if (score >= 3) text = 'High risk';
-  else if (score >= 1) text = 'Moderate risk';
-  return { score, text };
+  let percent = 0.2;
+  if (score >= 5) {
+    text = 'Highest risk';
+    percent = 10.7;
+  } else if (score >= 3) {
+    text = 'High risk';
+    percent = 4.3;
+  } else if (score >= 1) {
+    text = 'Moderate risk';
+    percent = 1.5;
+  }
+  return { score, percent, text };
 }
 
 function calculateAll() {
@@ -319,6 +323,7 @@ function calculateAll() {
   elements.stopbangScore.textContent = `${stopbang.score}`;
   elements.stopbangText.textContent = stopbang.text;
   elements.capriniScore.textContent = caprini.score;
+    elements.capriniPercent.textContent = `${caprini.percent.toFixed(1)}% risk`;
   elements.capriniText.textContent = caprini.text;
 }
 
