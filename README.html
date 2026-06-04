@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Perioperative Risk Calculator — Documentation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <h1>Perioperative Risk Calculator</h1>
+        <p>Documentation and quick reference for the calculators included in this app.</p>
+      </div>
+      <div class="badge">Documentation</div>
+    </header>
+
+    <main>
+      <section class="intro-card">
+        <p>This documentation mirrors the app styling for a consistent, readable experience. It provides brief descriptions and interpretation guidance for each included risk calculator.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Risk Calculators Overview</h2>
+
+        <h3>RCRI (Revised Cardiac Risk Index)</h3>
+        <p><strong>Clinical use:</strong> Predicts major adverse cardiac events (MACE) in non-cardiac surgery.</p>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li><strong>Score range:</strong> 0–6 points</li>
+          <li><strong>0 points (≈0.4%):</strong> Low risk</li>
+          <li><strong>1 point (≈0.9%):</strong> Mildly increased risk</li>
+          <li><strong>2 points (≈6.6%):</strong> Moderate risk</li>
+          <li><strong>≥3 points (≈11%):</strong> High risk</li>
+        </ul>
+
+        <h3>Gupta MICA (Myocardial Infarction or Cardiac Arrest)</h3>
+        <p><strong>Clinical use:</strong> Estimates 30-day risk of myocardial infarction or cardiac arrest using NSQIP-based models.</p>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li><strong>&lt;1%:</strong> Low risk</li>
+          <li><strong>1–5%:</strong> Moderate risk</li>
+          <li><strong>&gt;5%:</strong> Higher risk</li>
+        </ul>
+
+        <h3>NSQIP Cardiac Risk Calculator</h3>
+        <p><strong>Clinical use:</strong> Predicts cardiac complication risk using NSQIP variables (age, ASA, functional status, etc.).</p>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li><strong>&lt;2%:</strong> Low cardiac risk</li>
+          <li><strong>2–5%:</strong> Moderate cardiac risk</li>
+          <li><strong>&gt;5%:</strong> Higher cardiac risk</li>
+        </ul>
+
+        <h3>DASI (Duke Activity Status Index)</h3>
+        <p><strong>Clinical use:</strong> Estimates functional capacity (METs) from patient-reported activities.</p>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li><strong>≥7 METs:</strong> Excellent functional capacity; generally low perioperative cardiac risk</li>
+          <li><strong>4–7 METs:</strong> Moderate functional capacity; intermediate risk</li>
+          <li><strong>&lt;4 METs:</strong> Poor functional capacity; higher perioperative cardiac risk</li>
+        </ul>
+
+        <h3>ARISCAT</h3>
+        <p><strong>Clinical use:</strong> Predicts postoperative pulmonary complications (PPC).</p>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li><strong>&lt;26 points:</strong> Low risk (&lt;5% PPC)</li>
+          <li><strong>26–44 points:</strong> Intermediate risk (~10–15% PPC)</li>
+          <li><strong>≥45 points:</strong> High risk (&gt;30% PPC)</li>
+        </ul>
+
+        <h3>STOP-BANG</h3>
+        <p><strong>Clinical use:</strong> Screening tool for obstructive sleep apnea (OSA) risk.</p>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li><strong>0–2/8:</strong> Low OSA risk</li>
+          <li><strong>3–4/8:</strong> Intermediate OSA risk</li>
+          <li><strong>≥5/8:</strong> High OSA risk</li>
+        </ul>
+
+        <h3>Caprini Score</h3>
+        <p><strong>Clinical use:</strong> VTE risk stratification to guide thromboprophylaxis.</p>
+        <p><strong>Interpretation:</strong></p>
+        <ul>
+          <li><strong>0 points:</strong> Low VTE risk</li>
+          <li><strong>1 point:</strong> Moderate VTE risk</li>
+          <li><strong>2–4 points:</strong> High VTE risk</li>
+          <li><strong>≥5 points:</strong> Highest VTE risk</li>
+        </ul>
+
+        <h2>Features</h2>
+        <ul>
+          <li>Real-time calculation: scores update as you enter data.</li>
+          <li>No default values: each assessment starts with a clean slate.</li>
+          <li>Responsive design: works on desktop and mobile devices.</li>
+          <li>Educational: quick reference interpretations accompany scores.</li>
+        </ul>
+
+        <h2>Disclaimer</h2>
+        <p>This tool is for <strong>educational and reference purposes only</strong> and does not replace clinical judgment. Use in conjunction with appropriate clinical evaluation by qualified healthcare professionals.</p>
+      </section>
+    </main>
+
+  </body>
+</html>
