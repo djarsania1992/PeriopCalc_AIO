@@ -1,13 +1,13 @@
 const state = {
-  age: 65,
-  sex: 'male',
-  asa: 2,
-  functionalStatus: 'independent',
-  bmi: 28,
-  neck: 40,
-  creatinine: 1.0,
-  surgeryType: 'intraperitoneal',
-  surgeryDuration: 'long',
+  age: 0,
+  sex: '',
+  asa: '',
+  functionalStatus: '',
+  bmi: 0,
+  neck: 0,
+  creatinine: 0,
+  surgeryType: '',
+  surgeryDuration: '',
   emergency: false,
   ischemicHeartDisease: false,
   heartFailure: false,
@@ -27,6 +27,8 @@ const state = {
   swollenLegs: false,
   hormoneTherapy: false,
   surgeryUnder1month: false,
+  // DASI items will be initialized in createDASIControls
+  // Caprini items will be initialized in createCapriniControls
 };
 
 const elements = {
@@ -107,6 +109,7 @@ function createDASIControls() {
   const section = document.createElement('section');
   section.innerHTML = '<h3>DASI Activities</h3>';
   dasiItems.forEach(item => {
+    state[item.id] = false;
     const wrapper = document.createElement('div');
     wrapper.className = 'field-row checkbox-row';
     wrapper.innerHTML = `<label><input id="${item.id}" type="checkbox" /> ${item.label}</label>`;
@@ -118,7 +121,14 @@ function createDASIControls() {
 
 function createCapriniControls() {
   const section = document.createElement('section');
-  section.innerHTML = '<h3>Caprini Expanded</h3>';
+  section.innerHTML = '<h3>Caprini VTE Risk Factors</h3>';
+  // Initialize all Caprini items in state
+  capriniItems.forEach(item => {
+    if (!state.hasOwnProperty(item.id)) {
+      state[item.id] = false;
+    }
+  });
+  // Add all Caprini items (skip age-based ones that auto-calculate, and BMI which is elsewhere)
   capriniItems.slice(4).forEach(item => {
     const wrapper = document.createElement('div');
     wrapper.className = 'field-row checkbox-row';
@@ -173,16 +183,20 @@ function computeRCRI(data) {
 }
 
 function computeGupta(data) {
-  const intercept = -6.5794;
-  const ageCoef = 0.0282 * data.age;
-  const asaCoef = data.asa === 3 ? 0.5525 : data.asa === 4 ? 0.9811 : data.asa === 5 ? 1.6287 : 0;
-  const funcCoef = data.functionalStatus !== 'independent' ? 0.6647 : 0;
-  const surgeryCoef = ['intraperitoneal', 'intrathoracic', 'vascular'].includes(data.surgeryType) ? 1.1609 : 0;
-  const creatCoef = data.creatinine > 1.5 ? 0.8304 : 0;
-  const logit = intercept + ageCoef + asaCoef + funcCoef + surgeryCoef + creatCoef;
+  // Gupta Perioperative Cardiac Risk Calculator
+  // Based on NSQIP data: predicts risk of MI or cardiac arrest
+  const intercept = -6.62;
+  const ageCoef = 0.027 * data.age;
+  let sexCoef = 0;
+  if (data.sex === 'female') sexCoef = -0.31;
+  const asaCoef = data.asa === 3 ? 0.42 : data.asa === 4 ? 0.92 : data.asa === 5 ? 1.51 : 0;
+  const funcCoef = data.functionalStatus === 'partiallyDependent' ? 0.35 : data.functionalStatus === 'totallyDependent' ? 0.77 : 0;
+  const highRiskSurgery = ['intraperitoneal', 'intrathoracic', 'vascular'].includes(data.surgeryType) ? 1.15 : 0;
+  const creatCoef = data.creatinine > 1.5 ? 0.65 : 0;
+  const logit = intercept + ageCoef + sexCoef + asaCoef + funcCoef + highRiskSurgery + creatCoef;
   const probability = 1 / (1 + Math.exp(-logit));
   const percent = Math.round(probability * 1000) / 10;
-  let text = 'Estimated risk of MI or cardiac arrest.';
+  let text = 'Risk of MI or cardiac arrest.';
   if (percent < 1) text = 'Low risk';
   else if (percent < 5) text = 'Moderate risk';
   else text = 'Higher risk';
@@ -190,39 +204,41 @@ function computeGupta(data) {
 }
 
 function computeNSQIP(data) {
-  let logit = -4.4;
-  if (data.age >= 70) logit += 0.6;
-  else if (data.age >= 60) logit += 0.3;
-  if (data.asa === 4) logit += 0.7;
-  if (data.asa === 5) logit += 1.2;
-  if (data.functionalStatus !== 'independent') logit += 0.8;
-  if (data.emergency) logit += 0.7;
-  if (data.recentRespInfection) logit += 0.5;
-  if (data.hypertension) logit += 0.2;
-  if (data.heartFailure) logit += 0.4;
-  if (data.bmi >= 35) logit += 0.4;
-  if (data.activeCancer) logit += 0.5;
-  if (data.creatinine > 1.5) logit += 0.3;
-  if (['intraperitoneal', 'intrathoracic', 'vascular', 'upperAbdominal'].includes(data.surgeryType)) logit += 0.5;
-  if (data.surgeryDuration === 'long') logit += 0.3;
+  // NSQIP Cardiac Risk Calculator - focuses on cardiac complications
+  let logit = -5.5;
+  if (data.age >= 75) logit += 0.8;
+  else if (data.age >= 70) logit += 0.5;
+  else if (data.age >= 60) logit += 0.2;
+  if (data.asa === 4) logit += 0.9;
+  if (data.asa === 5) logit += 1.4;
+  if (data.asa === 3) logit += 0.4;
+  if (data.functionalStatus !== 'independent') logit += 0.6;
+  if (data.emergency) logit += 0.5;
+  if (data.heartFailure) logit += 0.8;
+  if (data.ischemicHeartDisease) logit += 0.7;
+  if (data.hypertension) logit += 0.3;
+  if (data.creatinine > 1.5) logit += 0.4;
+  if (data.insulinDiabetes) logit += 0.3;
+  if (['intraperitoneal', 'intrathoracic', 'vascular', 'upperAbdominal'].includes(data.surgeryType)) logit += 0.6;
+  if (data.surgeryDuration === 'long') logit += 0.2;
   const probability = 1 / (1 + Math.exp(-logit));
   const percent = Math.round(probability * 1000) / 10;
-  let text = 'Approximate overall surgical complication risk.';
-  if (percent < 5) text = 'Lower risk.';
-  else if (percent < 10) text = 'Moderate risk.';
-  else text = 'Higher risk.';
+  let text = 'Estimated cardiac complication risk.';
+  if (percent < 2) text = 'Low cardiac risk.';
+  else if (percent < 5) text = 'Moderate cardiac risk.';
+  else text = 'Higher cardiac risk.';
   return { score: percent.toFixed(1) + '%', text };
 }
 
 function computeDASI() {
   let total = 0;
   dasiItems.forEach(item => {
-    const control = document.getElementById(item.id);
-    if (control && control.checked) total += item.points;
+    if (state[item.id]) total += item.points;
   });
   const vo2 = 0.43 * total + 9.6;
-  const mets = Math.round((vo2 / 3.5) * 10) / 10;
-  return { score: total.toFixed(1), text: `${mets.toFixed(1)} METs estimate` };
+  const mets = vo2 / 3.5;
+  let score = mets.toFixed(1);
+  return { score, text: `${score} METs (functional capacity estimate)` };
 }
 
 function computeARISCAT(data) {
@@ -300,7 +316,7 @@ function calculateAll() {
   elements.dasiText.textContent = dasi.text;
   elements.ariscatScore.textContent = ariscat.score;
   elements.ariscatText.textContent = ariscat.text;
-  elements.stopbangScore.textContent = `${stopbang.score}/8`;
+  elements.stopbangScore.textContent = `${stopbang.score}`;
   elements.stopbangText.textContent = stopbang.text;
   elements.capriniScore.textContent = caprini.score;
   elements.capriniText.textContent = caprini.text;

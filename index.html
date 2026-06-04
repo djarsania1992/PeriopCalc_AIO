@@ -26,12 +26,13 @@
 
           <div class="field-row">
             <label for="age">Age</label>
-            <input id="age" type="number" min="18" max="120" value="65" />
+            <input id="age" type="number" min="18" max="120" />
           </div>
 
           <div class="field-row">
             <label for="sex">Sex</label>
             <select id="sex">
+              <option value="">Select...</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
@@ -40,8 +41,9 @@
           <div class="field-row">
             <label for="asa">ASA Class</label>
             <select id="asa">
+              <option value="">Select...</option>
               <option value="1">1</option>
-              <option value="2" selected>2</option>
+              <option value="2">2</option>
               <option value="3">3</option>
               <option value="4">4</option>
               <option value="5">5</option>
@@ -51,7 +53,8 @@
           <div class="field-row">
             <label for="functionalStatus">Functional status</label>
             <select id="functionalStatus">
-              <option value="independent" selected>Independent</option>
+              <option value="">Select...</option>
+              <option value="independent">Independent</option>
               <option value="partiallyDependent">Partially dependent</option>
               <option value="totallyDependent">Totally dependent</option>
             </select>
@@ -59,25 +62,26 @@
 
           <div class="field-row">
             <label for="bmi">BMI (kg/m²)</label>
-            <input id="bmi" type="number" min="10" max="80" value="28" step="0.1" />
+            <input id="bmi" type="number" min="10" max="80" step="0.1" />
           </div>
 
           <div class="field-row">
             <label for="neck">Neck circumference (cm)</label>
-            <input id="neck" type="number" min="20" max="60" value="40" step="0.1" />
+            <input id="neck" type="number" min="20" max="60" step="0.1" />
           </div>
 
           <div class="field-row">
             <label for="creatinine">Creatinine (mg/dL)</label>
-            <input id="creatinine" type="number" min="0" max="10" value="1.0" step="0.1" />
+            <input id="creatinine" type="number" min="0" max="10" step="0.1" />
           </div>
 
           <div class="field-row">
             <label for="surgeryType">Surgery type</label>
             <select id="surgeryType">
+              <option value="">Select...</option>
               <option value="general">General / low risk</option>
               <option value="upperAbdominal">Upper abdominal</option>
-              <option value="intraperitoneal" selected>Intraperitoneal</option>
+              <option value="intraperitoneal">Intraperitoneal</option>
               <option value="intrathoracic">Intrathoracic</option>
               <option value="vascular">Vascular</option>
               <option value="orthopedic">Orthopedic</option>
@@ -89,8 +93,9 @@
           <div class="field-row">
             <label for="surgeryDuration">Estimated duration</label>
             <select id="surgeryDuration">
+              <option value="">Select...</option>
               <option value="short">< 2 hours</option>
-              <option value="long" selected>> 2 hours</option>
+              <option value="long">> 2 hours</option>
             </select>
           </div>
 
@@ -138,28 +143,7 @@
             <label><input id="hypertension" type="checkbox" /> Hypertension</label>
           </div>
 
-          <h3>Thrombosis / Caprini</h3>
-          <div class="field-row checkbox-row">
-            <label><input id="historyVTE" type="checkbox" /> History of DVT / PE</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="activeCancer" type="checkbox" /> Active cancer</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="bedRest" type="checkbox" /> Bed rest > 72 hours</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="varicoseVeins" type="checkbox" /> Varicose veins</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="swollenLegs" type="checkbox" /> Swollen legs</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="hormoneTherapy" type="checkbox" /> Estrogen / OCP / HRT</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="surgeryUnder1month" type="checkbox" /> Major surgery in last month</label>
-          </div>
+          <h3>Thrombosis Prevention</h3>
         </article>
 
         <article class="panel results">
