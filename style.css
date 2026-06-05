@@ -244,3 +244,27 @@ select.invalid {
     margin-bottom: 14px;
   }
 }
+
+.site-footer {
+  margin-top: 32px;
+  padding: 18px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.site-footer p {
+  margin: 6px 0;
+}
+
+.site-footer a {
+  color: var(--primary);
+  text-decoration: none;
+  margin: 0 8px;
+  font-weight: 600;
+}
+
+.site-footer .meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
