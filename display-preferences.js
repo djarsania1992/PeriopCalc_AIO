@@ -156,4 +156,3 @@
     toggleHighContrast,
   };
 }());
-What 
