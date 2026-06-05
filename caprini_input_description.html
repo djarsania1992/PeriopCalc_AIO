@@ -1,17 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-text-size="default" data-contrast="standard">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Caprini Input Definitions</title>
+    <script>
+      (function () {
+        try {
+          var size = window.localStorage.getItem('periopcalc.textSize');
+          var contrast = window.localStorage.getItem('periopcalc.highContrast');
+          document.documentElement.dataset.textSize = ['smallest', 'smaller', 'default', 'larger', 'largest'].indexOf(size) !== -1 ? size : 'default';
+          document.documentElement.dataset.contrast = contrast === 'true' ? 'high' : 'standard';
+        } catch (error) {
+          document.documentElement.dataset.textSize = 'default';
+          document.documentElement.dataset.contrast = 'standard';
+        }
+      }());
+    </script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
       <div class="brand">
-        <h1>Caprini Input Definitions</h1>
+        <div class="title-row">
+          <h1>Caprini Input Definitions</h1>
+          <div class="display-controls" aria-label="Display settings">
+            <div class="text-size-control" role="group" aria-label="Text size controls">
+              <span class="display-label">Text</span>
+              <button id="textSizeDecrease" class="display-btn" type="button" aria-label="Decrease text size" title="Decrease text size"><span aria-hidden="true">A&minus;</span></button>
+              <button id="textSizeReset" class="display-btn display-btn-reset" type="button" aria-label="Reset text size" title="Reset text size"><span aria-hidden="true">Reset</span></button>
+              <button id="textSizeIncrease" class="display-btn" type="button" aria-label="Increase text size" title="Increase text size"><span aria-hidden="true">A+</span></button>
+            </div>
+            <button id="contrastToggle" class="display-btn contrast-toggle" type="button" aria-pressed="false" title="Toggle high contrast">High Contrast</button>
+          </div>
+        </div>
         <p>Detailed definitions for each Caprini risk factor used in the calculator.</p>
+        <p id="displayPreferenceStatus" class="sr-only" aria-live="polite" aria-atomic="true"></p>
       </div>
+      <div class="badge">Definitions</div>
     </header>
     <main>
       <section>
@@ -182,5 +208,15 @@
         <p>Superficial vein thrombosis is a VTE risk factor, especially with other risk factors. SVT combined with an acquired thrombotic risk factor increases venous thrombosis risk 10- to 100-fold. Isolated SVT frequently progresses to DVT and PE. Cancer patients with SVT have a poor prognosis similar to those with DVT and high recurrence rates.</p>
       </section>
     </main>
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-section">&copy; 2026 DJ Jarsania, MD.</div>
+      <nav class="footer-section footer-links" aria-label="Footer links">
+        <a href="index.html" title="Return to calculator">Calculator</a>
+        <a href="README.html" target="_blank" rel="noopener noreferrer" aria-label="Open documentation in a new window" title="Open documentation in a new window">Documentation</a>
+        <a href="privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Open Privacy Notice in a new window" title="Open Privacy Notice in a new window">Privacy Notice</a>
+      </nav>
+      <div class="footer-section">v1.0.0</div>
+    </footer>
+    <script src="display-preferences.js"></script>
   </body>
 </html>

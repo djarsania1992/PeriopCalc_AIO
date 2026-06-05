@@ -1,16 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-text-size="default" data-contrast="standard">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Privacy Notice — Perioperative Risk Calculator</title>
+    <script>
+      (function () {
+        try {
+          var size = window.localStorage.getItem('periopcalc.textSize');
+          var contrast = window.localStorage.getItem('periopcalc.highContrast');
+          document.documentElement.dataset.textSize = ['smallest', 'smaller', 'default', 'larger', 'largest'].indexOf(size) !== -1 ? size : 'default';
+          document.documentElement.dataset.contrast = contrast === 'true' ? 'high' : 'standard';
+        } catch (error) {
+          document.documentElement.dataset.textSize = 'default';
+          document.documentElement.dataset.contrast = 'standard';
+        }
+      }());
+    </script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
       <div class="brand">
-        <h1>Privacy Policy</h1>
-        <p>Perioperative Risk Calculator — Privacy Notice</p>
+        <div class="title-row">
+          <h1>Privacy Policy</h1>
+          <div class="display-controls" aria-label="Display settings">
+            <div class="text-size-control" role="group" aria-label="Text size controls">
+              <span class="display-label">Text</span>
+              <button id="textSizeDecrease" class="display-btn" type="button" aria-label="Decrease text size" title="Decrease text size"><span aria-hidden="true">A&minus;</span></button>
+              <button id="textSizeReset" class="display-btn display-btn-reset" type="button" aria-label="Reset text size" title="Reset text size"><span aria-hidden="true">Reset</span></button>
+              <button id="textSizeIncrease" class="display-btn" type="button" aria-label="Increase text size" title="Increase text size"><span aria-hidden="true">A+</span></button>
+            </div>
+            <button id="contrastToggle" class="display-btn contrast-toggle" type="button" aria-pressed="false" title="Toggle high contrast">High Contrast</button>
+          </div>
+        </div>
+        <p>Perioperative Risk Calculator &mdash; Privacy Notice</p>
+        <p id="displayPreferenceStatus" class="sr-only" aria-live="polite" aria-atomic="true"></p>
       </div>
       <div class="badge">Privacy</div>
     </header>
@@ -23,7 +48,7 @@
 
         <p>This Privacy Policy applies to <strong>Perioperative Risk Calculator</strong> (the "Application"), a community-use web application developed by <strong>DJ Jarsania, MD</strong> ("we," "us," or "our").</p>
 
-        <p>We built this Application to serve the community, and we believe your privacy should be absolute. Because of this commitment, <strong>this Application does not collect, store, track, or share any personal user data.</strong></p>
+        <p>We built this Application to serve the community, and we believe your privacy should be protected. Because of this commitment, <strong>this Application does not collect, track, or share personal user data.</strong> The app may save local display preferences, such as text size and high-contrast mode, in your browser so those accessibility settings persist after refresh.</p>
 
         <hr />
 
@@ -31,7 +56,8 @@
         <p><strong>We collect zero personal information.</strong></p>
         <ul>
           <li><strong>No Accounts:</strong> You do not need to log in or provide an email address or name to use the Application.</li>
-          <li><strong>No Server Storage:</strong> Any data or inputs you enter while using the Application are processed entirely locally in your web browser.</li>
+          <li><strong>No Server Storage:</strong> Clinical data and calculator inputs are processed entirely locally in your web browser and are not intentionally saved by this app.</li>
+          <li><strong>Local Display Preferences:</strong> Text-size and high-contrast settings may be saved in your browser local storage. These preferences do not include patient information or calculator inputs.</li>
           <li><strong>No Analytics:</strong> We do not use tracking cookies, tracking pixels, or third-party web analytics services.</li>
         </ul>
 
@@ -43,7 +69,7 @@
         <p>Our Application may contain links to external community resources. If you click on a third-party link, you will be directed to that site. We do not operate these external sites and strongly advise you to review their respective privacy policies.</p>
 
         <h3>4. Children's Privacy</h3>
-        <p>Because we do not collect any personal data whatsoever, this Application is completely safe for use by individuals of all ages, including children under the age of 13.</p>
+        <p>This Application is not designed to collect information from children or adults. Because there are no accounts, analytics, cookies, or server-side patient data storage, the Application itself does not collect personal information from users of any age.</p>
 
         <h3>5. Changes to This Privacy Policy</h3>
         <p>We may update this Privacy Policy from time to time to maintain transparency. Any changes will be posted directly on this page with an updated "Last Updated" date.</p>
@@ -57,5 +83,15 @@
       </section>
     </main>
 
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-section">&copy; 2026 DJ Jarsania, MD.</div>
+      <nav class="footer-section footer-links" aria-label="Footer links">
+        <a href="index.html" title="Return to calculator">Calculator</a>
+        <a href="README.html" target="_blank" rel="noopener noreferrer" aria-label="Open documentation in a new window" title="Open documentation in a new window">Documentation</a>
+        <a href="mailto:jarsania.dhairya@mayo.edu?subject=Feedback%20for%20PeriopCalc_AIO" title="Send feedback">Feedback</a>
+      </nav>
+      <div class="footer-section">v1.0.0</div>
+    </footer>
+    <script src="display-preferences.js"></script>
   </body>
 </html>
