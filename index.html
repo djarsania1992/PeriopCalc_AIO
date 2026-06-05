@@ -1,209 +1,319 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-text-size="default" data-contrast="standard">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Static perioperative risk calculator for RCRI, Gupta, DASI, ARISCAT, STOP-BANG, and Caprini scores." />
+    <meta name="description" content="Static perioperative risk calculator for RCRI, Gupta MICA, DASI, ARISCAT, STOP-BANG, and Caprini scores." />
     <title>Perioperative Risk Calculator</title>
+    <script>
+      (function () {
+        try {
+          var size = window.localStorage.getItem('periopcalc.textSize');
+          var contrast = window.localStorage.getItem('periopcalc.highContrast');
+          document.documentElement.dataset.textSize = ['smallest', 'smaller', 'default', 'larger', 'largest'].indexOf(size) !== -1 ? size : 'default';
+          document.documentElement.dataset.contrast = contrast === 'true' ? 'high' : 'standard';
+        } catch (error) {
+          document.documentElement.dataset.textSize = 'default';
+          document.documentElement.dataset.contrast = 'standard';
+        }
+      }());
+    </script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
       <div class="brand">
-        <h1>Perioperative Risk Calculator</h1>
+        <div class="title-row">
+          <h1>Perioperative Risk Calculator</h1>
+          <div class="display-controls" aria-label="Display settings">
+            <div class="text-size-control" role="group" aria-label="Text size controls">
+              <span class="display-label">Text</span>
+              <button id="textSizeDecrease" class="display-btn" type="button" aria-label="Decrease text size" title="Decrease text size"><span aria-hidden="true">A&minus;</span></button>
+              <button id="textSizeReset" class="display-btn display-btn-reset" type="button" aria-label="Reset text size" title="Reset text size"><span aria-hidden="true">Reset</span></button>
+              <button id="textSizeIncrease" class="display-btn" type="button" aria-label="Increase text size" title="Increase text size"><span aria-hidden="true">A+</span></button>
+            </div>
+            <button id="contrastToggle" class="display-btn contrast-toggle" type="button" aria-pressed="false" title="Toggle high contrast">High Contrast</button>
+          </div>
+        </div>
         <p>All-in-one static app for RCRI, Gupta, DASI, ARISCAT, STOP-BANG, and Caprini.</p>
+        <p id="displayPreferenceStatus" class="sr-only" aria-live="polite" aria-atomic="true"></p>
       </div>
       <div class="badge">Designed for PC + mobile</div>
     </header>
 
     <main>
+      <section class="clinical-disclaimer" role="note" aria-label="Clinical use disclaimer">
+        <span class="disclaimer-title">Clinical use disclaimer:</span>
+        <span class="disclaimer-text">This tool is for <strong>educational and reference purposes only</strong> and does <strong>not</strong> replace clinical judgment, local institutional policy, or a comprehensive preoperative assessment by a qualified clinician. Verify all inputs and interpret results in the full clinical context before making perioperative decisions.</span>
+      </section>
+
+      <noscript>
+        <section class="app-error" role="alert">
+          This calculator requires JavaScript. Enable JavaScript in your browser to use the scoring tools.
+        </section>
+      </noscript>
+
+      <section id="appError" class="app-error" role="alert" hidden>
+        A calculation error occurred. Check the inputs and refresh the page if the problem persists.
+      </section>
+
       <section class="intro-card">
-        <p>Enter the patient and surgery information below. Scores update automatically for each risk calculator. This tool is for general reference only and not a replacement for clinical judgment. See <a href="README.html" target="_blank" rel="noopener noreferrer" aria-label="Open documentation" title="Open documentation">Documentation</a> for calculator details. If additional risk stratification is needed, follow the <a href="https://riskcalculator.facs.org/RiskCalculator/PatientInfo.jsp" target="_blank" rel="noopener noreferrer" aria-label="Open the full NSQIP ACS Risk Calculator" title="Open the full NSQIP ACS Risk Calculator">full NSQIP ACS calculator</a>.</p>
+        <p>Enter the patient and surgery information below. Scores update automatically for each risk calculator. See <a href="README.html" target="_blank" rel="noopener noreferrer" aria-label="Open documentation" title="Open documentation">Documentation</a> for calculator details. If additional risk stratification is needed, follow the <a href="https://riskcalculator.facs.org/RiskCalculator/PatientInfo.jsp" target="_blank" rel="noopener noreferrer" aria-label="Open the full NSQIP ACS Risk Calculator" title="Open the full NSQIP ACS Risk Calculator">full NSQIP ACS calculator <span aria-label="opens in new tab">&#8599;</span></a>.</p>
       </section>
 
-      <section class="calculator-grid">
-        <article class="panel inputs">
-          <h2>Patient &amp; Surgery Inputs</h2>
-          <div id="validationMessage" class="validation-message" role="status" aria-live="polite"></div>
+      <form id="riskForm" novalidate>
+        <section class="calculator-grid">
+          <article class="panel inputs" aria-labelledby="inputsHeading">
+            <h2 id="inputsHeading">Patient &amp; Surgery Inputs</h2>
+            <div id="validationMessage" class="validation-message" role="status" aria-live="polite" aria-atomic="true"></div>
 
-          <div class="field-row">
-            <label for="age">Age</label>
-            <input id="age" type="number" min="18" max="120" />
-          </div>
+            <fieldset>
+              <legend>Basic Information</legend>
 
-          <div class="field-row">
-            <label for="sex">Sex</label>
-            <select id="sex">
-              <option value="">Select...</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
+              <div class="field-row">
+                <label for="age">Age <span aria-label="required">*</span></label>
+                <input id="age" name="age" type="number" min="18" max="120" step="1" inputmode="numeric" required aria-required="true" />
+              </div>
 
-          <div class="field-row">
-            <label for="asa">ASA Class</label>
-            <select id="asa">
-              <option value="">Select...</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
-          </div>
+              <div class="field-row">
+                <label for="sex">Sex <span aria-label="required">*</span></label>
+                <select id="sex" name="sex" required aria-required="true">
+                  <option value="">Select...</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
 
-          <div class="field-row">
-            <label for="functionalStatus">Functional status</label>
-            <select id="functionalStatus">
-              <option value="">Select...</option>
-              <option value="independent">Independent</option>
-              <option value="partiallyDependent">Partially dependent</option>
-              <option value="totallyDependent">Totally dependent</option>
-            </select>
-          </div>
+              <div class="field-row">
+                <label for="asa">ASA Class <span aria-label="required">*</span></label>
+                <select id="asa" name="asa" required aria-required="true" aria-describedby="asa-help">
+                  <option value="">Select...</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <small id="asa-help">American Society of Anesthesiologists physical status classification.</small>
+              </div>
 
-          <div class="field-row">
-            <label for="bmi">BMI (kg/m²)</label>
-            <input id="bmi" type="number" min="10" max="80" step="0.1" />
-          </div>
+              <div class="field-row">
+                <label for="functionalStatus">Functional status <span aria-label="required">*</span></label>
+                <select id="functionalStatus" name="functionalStatus" required aria-required="true" aria-describedby="fs-help">
+                  <option value="">Select...</option>
+                  <option value="independent">Independent</option>
+                  <option value="partiallyDependent">Partially dependent</option>
+                  <option value="totallyDependent">Totally dependent</option>
+                </select>
+                <small id="fs-help">Can the patient perform daily activities and self-care without assistance?</small>
+              </div>
+            </fieldset>
 
-          <div class="field-row">
-            <label for="neck">Neck circumference (cm)</label>
-            <input id="neck" type="number" value="35" min="20" max="60" step="0.1" />
-          </div>
+            <fieldset>
+              <legend>Anthropometric Measurements</legend>
 
-          <div class="field-row">
-            <label for="creatinine">Creatinine (mg/dL)</label>
-            <input id="creatinine" type="number" min="0" max="10" step="0.1" />
-          </div>
+              <div class="field-row">
+                <label for="bmi">BMI (kg/m&sup2;) <span aria-label="required">*</span></label>
+                <input id="bmi" name="bmi" type="number" min="10" max="80" step="0.1" inputmode="decimal" required aria-required="true" aria-describedby="bmi-help" />
+                <small id="bmi-help">Used for STOP-BANG and Caprini scoring.</small>
+              </div>
 
-          <div class="field-row">
-            <label for="surgeryType">Surgery type</label>
-            <select id="surgeryType">
-              <option value="">Select...</option>
-              <option value="general">General / low risk</option>
-              <option value="upperAbdominal">Upper abdominal</option>
-              <option value="intraperitoneal">Intraperitoneal</option>
-              <option value="intrathoracic">Intrathoracic</option>
-              <option value="vascular">Vascular</option>
-              <option value="orthopedic">Orthopedic</option>
-              <option value="headNeck">Head/neck</option>
-              <option value="neurologic">Neurosurgery</option>
-            </select>
-          </div>
+              <div class="field-row">
+                <label for="neck">Neck circumference (cm) <span aria-label="required">*</span></label>
+                <input id="neck" name="neck" type="number" min="20" max="60" step="0.1" inputmode="decimal" required aria-required="true" aria-describedby="neck-help" />
+                <small id="neck-help">Used for STOP-BANG screening. Enter the measured neck circumference; no default value is assumed.</small>
+              </div>
 
-          <div class="field-row">
-            <label for="surgeryDuration">Estimated duration</label>
-            <select id="surgeryDuration">
-              <option value="">Select...</option>
-              <option value="short">< 2 hours</option>
-              <option value="medium">2-3 hours</option>
-              <option value="long">> 3 hours</option>
-            </select>
-          </div>
+              <div class="field-row">
+                <label for="creatinine">Creatinine (mg/dL) <span aria-label="required">*</span></label>
+                <input id="creatinine" name="creatinine" type="number" min="0" max="10" step="0.1" inputmode="decimal" required aria-required="true" aria-describedby="creatinine-help" />
+                <small id="creatinine-help">Used by RCRI and Gupta MICA.</small>
+              </div>
+            </fieldset>
 
-          <div class="field-row checkbox-row">
-            <label><input id="emergency" type="checkbox" /> Emergency surgery</label>
-          </div>
+            <fieldset>
+              <legend>Surgery Information</legend>
 
-          <h3>Cardiac Risk</h3>
+              <div class="field-row">
+                <label for="surgeryType">RCRI surgery category <span aria-label="required">*</span></label>
+                <select id="surgeryType" name="surgeryType" required aria-required="true" aria-describedby="surgery-type-help">
+                  <option value="">Select...</option>
+                  <option value="rcriLowRisk">No RCRI high-risk feature</option>
+                  <option value="rcriHighRisk">Intraperitoneal, intrathoracic, or suprainguinal vascular surgery</option>
+                </select>
+                <small id="surgery-type-help">Used only by RCRI. ARISCAT, Gupta MICA, and Caprini procedure categories are entered separately below.</small>
+              </div>
 
-          <div class="field-row checkbox-row">
-            <label><input id="ischemicHeartDisease" type="checkbox" /> Ischemic heart disease</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="heartFailure" type="checkbox" /> History of CHF</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="cerebrovascular" type="checkbox" /> Cerebrovascular disease / TIA</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="insulinDiabetes" type="checkbox" /> Insulin-dependent diabetes</label>
-          </div>
+              <div class="field-row">
+                <label for="guptaProcedureType">Procedure type (Gupta MICA) <span aria-label="required">*</span></label>
+                <select id="guptaProcedureType" name="guptaProcedureType" required aria-required="true" aria-describedby="gupta-procedure-help">
+                  <option value="">Select...</option>
+                  <option value="anorectal">Anorectal</option>
+                  <option value="aortic">Aortic</option>
+                  <option value="bariatric">Bariatric</option>
+                  <option value="brain">Brain</option>
+                  <option value="breast">Breast</option>
+                  <option value="cardiac">Cardiac</option>
+                  <option value="ent">ENT (except thyroid/parathyroid)</option>
+                  <option value="foregutHpb">Foregut or hepatopancreatobiliary</option>
+                  <option value="gallbladderAppendixAdrenalSpleen">Gallbladder, appendix, adrenal, or spleen</option>
+                  <option value="hernia">Hernia (ventral, inguinal, femoral)</option>
+                  <option value="intestinal">Intestinal</option>
+                  <option value="neck">Neck (thyroid/parathyroid)</option>
+                  <option value="obGyn">Obstetric/gynecologic</option>
+                  <option value="orthopedic">Orthopedic and non-vascular extremity</option>
+                  <option value="otherAbdominal">Other abdominal</option>
+                  <option value="peripheralVascular">Peripheral vascular</option>
+                  <option value="skin">Skin</option>
+                  <option value="spine">Spine</option>
+                  <option value="nonEsophagealThoracic">Non-esophageal thoracic</option>
+                  <option value="vein">Vein</option>
+                  <option value="urology">Urology</option>
+                </select>
+                <small id="gupta-procedure-help">Used only by Gupta MICA; select the closest standard procedure category rather than inferring from RCRI or ARISCAT surgery fields.</small>
+              </div>
 
-          <h3>Pulmonary &amp; Infection</h3>
-          <div class="field-row checkbox-row">
-            <label><input id="recentRespInfection" type="checkbox" /> Respiratory infection in last month</label>
-          </div>
-          <div class="field-row">
-            <label for="spO2">Preoperative SpO₂</label>
-            <select id="spO2">
-              <option value="">Select...</option>
-              <option value=">=96">≥96%</option>
-              <option value="91-95">91–95%</option>
-              <option value="<=90">≤90%</option>
-            </select>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="preopAnemia" type="checkbox" /> Hb ≤ 10 g/dL</label>
-          </div>
+              <div class="field-row">
+                <label for="ariscatIncision">ARISCAT surgical incision/location <span aria-label="required">*</span></label>
+                <select id="ariscatIncision" name="ariscatIncision" required aria-required="true" aria-describedby="ariscat-incision-help">
+                  <option value="">Select...</option>
+                  <option value="peripheral">Peripheral or other non-thoracic/non-upper-abdominal incision</option>
+                  <option value="upperAbdominal">Upper abdominal incision</option>
+                  <option value="intrathoracic">Intrathoracic incision</option>
+                </select>
+                <small id="ariscat-incision-help">Used only by ARISCAT pulmonary-risk scoring.</small>
+              </div>
 
-          <h3>Sleep Apnea / STOP-BANG</h3>
-          <div class="field-row checkbox-row">
-            <label><input id="snoring" type="checkbox" /> Loud snoring</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="tired" type="checkbox" /> Daytime tiredness</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="observedApnea" type="checkbox" /> Observed apnea</label>
-          </div>
-          <div class="field-row checkbox-row">
-            <label><input id="hypertension" type="checkbox" /> Hypertension</label>
-          </div>
-        </article>
+              <div class="field-row">
+                <label for="surgeryDuration">Estimated duration <span aria-label="required">*</span></label>
+                <select id="surgeryDuration" name="surgeryDuration" required aria-required="true">
+                  <option value="">Select...</option>
+                  <option value="short">&lt; 2 hours</option>
+                  <option value="medium">2-3 hours</option>
+                  <option value="long">&gt; 3 hours</option>
+                </select>
+              </div>
 
-        <article class="panel results">
-          <h2>Results</h2>
-          <div class="result-grid">
-            <section class="result-card">
-              <h3>RCRI</h3>
-              <p><strong id="rcriScore">0</strong> points</p>
-              <p id="rcriText">Low risk</p>
-            </section>
-            <section class="result-card">
-              <h3>Gupta MICA</h3>
-              <p><strong id="guptaScore">0%</strong></p>
-              <p id="guptaText">Estimated risk of MI/cardiac arrest</p>
-            </section>
-            <section class="result-card">
-              <h3>DASI</h3>
-              <p><strong id="dasiPoints">0</strong> points</p>
-              <p><strong id="dasiMets">0.00</strong> METs</p>
-            </section>
-            <section class="result-card">
-              <h3>ARISCAT</h3>
-              <p><strong id="ariscatScore">0</strong></p>
-              <p id="ariscatText">Risk category</p>
-              <p id="ariscatPct">0% PPC risk</p>
-            </section>
-            <section class="result-card">
-              <h3>STOP-BANG</h3>
-              <p><strong id="stopbangScore">0</strong>/8</p>
-              <p id="stopbangText">Sleep apnea risk</p>
-            </section>
-            <section class="result-card">
-              <h3>Caprini</h3>
-              <p><strong id="capriniScore">0</strong> points</p>
-              <p id="capriniPercent">0% risk</p>
-              <p id="capriniText">VTE risk category</p>
-            </section>
-          </div>
-        </article>
-      </section>
+              <div class="field-row checkbox-row">
+                <label><input id="emergency" name="emergency" type="checkbox" /> Emergency surgery</label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Cardiac Risk Factors</legend>
+
+              <div class="field-row checkbox-row">
+                <label><input id="ischemicHeartDisease" name="ischemicHeartDisease" type="checkbox" /> Ischemic heart disease</label>
+              </div>
+              <div class="field-row checkbox-row">
+                <label><input id="heartFailure" name="heartFailure" type="checkbox" /> History of CHF</label>
+              </div>
+              <div class="field-row checkbox-row">
+                <label><input id="cerebrovascular" name="cerebrovascular" type="checkbox" /> Cerebrovascular disease / TIA</label>
+              </div>
+              <div class="field-row checkbox-row">
+                <label><input id="insulinDiabetes" name="insulinDiabetes" type="checkbox" /> Insulin-dependent diabetes</label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Pulmonary &amp; Infection</legend>
+              <div class="field-row checkbox-row">
+                <label><input id="recentRespInfection" name="recentRespInfection" type="checkbox" /> Respiratory infection in last month</label>
+              </div>
+              <div class="field-row">
+                <label for="spO2">Preoperative SpO<sub>2</sub> <span aria-label="required">*</span></label>
+                <select id="spO2" name="spO2" required aria-required="true">
+                  <option value="">Select...</option>
+                  <option value="ge96">&ge;96%</option>
+                  <option value="91-95">91-95%</option>
+                  <option value="le90">&le;90%</option>
+                </select>
+              </div>
+              <div class="field-row checkbox-row">
+                <label><input id="preopAnemia" name="preopAnemia" type="checkbox" /> Hb &le; 10 g/dL</label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Sleep Apnea / STOP-BANG Screening</legend>
+              <div class="field-row checkbox-row">
+                <label><input id="snoring" name="snoring" type="checkbox" /> Loud snoring</label>
+              </div>
+              <div class="field-row checkbox-row">
+                <label><input id="tired" name="tired" type="checkbox" /> Daytime tiredness</label>
+              </div>
+              <div class="field-row checkbox-row">
+                <label><input id="observedApnea" name="observedApnea" type="checkbox" /> Observed apnea</label>
+              </div>
+              <div class="field-row checkbox-row">
+                <label><input id="hypertension" name="hypertension" type="checkbox" /> Hypertension</label>
+              </div>
+            </fieldset>
+          </article>
+
+          <article class="panel results" aria-labelledby="resultsHeading">
+            <div class="results-header">
+              <h2 id="resultsHeading">Results</h2>
+              <div class="export-control">
+                <button id="exportButton" class="export-btn" type="button" aria-describedby="exportStatus exportPreview" aria-label="Copy risk assessment results to clipboard">📋 Copy Results</button>
+                <div class="export-preview" id="exportPreview" role="tooltip" aria-label="Copy preview">
+                  <strong>Copy preview</strong>
+                  <div id="exportPreviewText" class="copy-preview-content"></div>
+                </div>
+              </div>
+            </div>
+            <div id="exportStatus" class="copy-status" role="status" aria-live="polite" aria-atomic="true"></div>
+
+            <div class="result-grid">
+              <section class="result-card">
+                <h3>RCRI</h3>
+                <p><strong id="rcriScore">&mdash;</strong> points</p>
+                <p id="rcriText">Incomplete inputs</p>
+              </section>
+              <section class="result-card">
+                <h3>Gupta MICA</h3>
+                <p><strong id="guptaScore">&mdash;</strong></p>
+                <p id="guptaText">Incomplete inputs</p>
+              </section>
+              <section class="result-card">
+                <h3>DASI</h3>
+                <p><strong id="dasiPoints">&mdash;</strong> points</p>
+                <p><strong id="dasiMets">&mdash;</strong> METs</p>
+                <p id="dasiText">Select activities to estimate METs.</p>
+              </section>
+              <section class="result-card">
+                <h3>ARISCAT</h3>
+                <p><strong id="ariscatScore">&mdash;</strong> points</p>
+                <p id="ariscatText">Incomplete inputs</p>
+                <p id="ariscatPct"></p>
+              </section>
+              <section class="result-card">
+                <h3>STOP-BANG</h3>
+                <p><strong id="stopbangScore">&mdash;</strong>/8</p>
+                <p id="stopbangText">Incomplete inputs</p>
+              </section>
+              <section class="result-card">
+                <h3>Caprini</h3>
+                <p><strong id="capriniScore">&mdash;</strong> points</p>
+                <p id="capriniPercent"></p>
+                <p id="capriniText">Incomplete inputs</p>
+              </section>
+            </div>
+          </article>
+        </section>
+      </form>
     </main>
 
-    <script src="script.js"></script>
-
     <footer class="site-footer" role="contentinfo">
-      <p>@ 2026 DJ Jarsania, MD. Built for personal and institutional community use.</p>
-      <p class="meta">
+      <div class="footer-section">&copy; 2026 DJ Jarsania, MD. Built for personal and institutional community use.</div>
+      <nav class="footer-section footer-links" aria-label="Footer links">
         <a href="mailto:jarsania.dhairya@mayo.edu?subject=Feedback%20for%20PeriopCalc_AIO" title="Send feedback">Feedback</a>
-        ·
-        <a href="privacy.html" title="Privacy Notice">Privacy Notice</a>
-        ·
-        v1.0.0
-      </p>
+        <a href="privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Open Privacy Notice in a new window" title="Open Privacy Notice in a new window">Privacy Notice</a>
+      </nav>
+      <div class="footer-section">v1.0.0</div>
     </footer>
+    <script src="display-preferences.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

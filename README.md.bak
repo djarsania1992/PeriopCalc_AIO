@@ -1,6 +1,6 @@
 # PeriopCalc_AIO
 
-A comprehensive perioperative risk assessment tool that combines multiple evidence-based calculators into one unified interface. Designed to support clinical decision-making for preoperative risk stratification.
+A comprehensive perioperative risk assessment tool that combines multiple evidence-based calculators into one unified interface. Designed as an educational and reference aid for preoperative risk stratification.
 
 Open `index.html` in a browser or host the folder on GitHub Pages for a static, responsive perioperative risk calculator.
 
@@ -13,6 +13,7 @@ Open `index.html` in a browser or host the folder on GitHub Pages for a static, 
 
 **Interpretation:**
 - **Score Range:** 0–6 points
+- **High-risk surgery input:** intraperitoneal, intrathoracic, or suprainguinal vascular surgery
 - **0 points (0.4%):** Low risk
 - **1 point (~0.9%):** Mild increased risk
 - **2 points (~6.6%):** Moderate risk
@@ -23,26 +24,15 @@ Higher scores suggest increased perioperative cardiac complications. Used to gui
 ---
 
 ### Gupta MICA (Myocardial Infarction or Cardiac Arrest)
-**Clinical Use:** Predicts 30-day risk of myocardial infarction or cardiac arrest using NSQIP data. More contemporary than RCRI and includes patient sex and better functional status assessment.
+**Clinical Use:** Estimates 30-day risk of myocardial infarction or cardiac arrest using NSQIP-derived predictors: age, ASA class, functional status, creatinine status, and standard Gupta MICA procedure category.
 
 **Interpretation:**
 - **<1%:** Low risk
 - **1–5%:** Moderate risk
-- **>5%:** Higher risk
+- **≥5%:** Higher risk
 
-Provides a percentage estimate of cardiac events. Useful for informed consent discussions and determining need for perioperative cardiac monitoring or optimization.
+Provides a percentage estimate of MI/cardiac arrest risk. The app uses a dedicated Gupta procedure-category field rather than inferring this from the RCRI or ARISCAT surgery fields.
 
----
-
-### NSQIP Cardiac Risk Calculator
-**Clinical Use:** Specifically focuses on cardiac complication risk using variables from the National Surgical Quality Improvement Program (NSQIP) database. Emphasizes factors directly related to cardiac events.
-
-**Interpretation:**
-- **<2%:** Low cardiac risk
-- **2–5%:** Moderate cardiac risk
-- **>5%:** Higher cardiac risk
-
-Considers age, ASA class, functional status, cardiac history, emergency status, and surgery type. Helps determine perioperative cardiac risk stratification and need for additional optimization.
 
 ---
 
@@ -59,12 +49,12 @@ DASI is based on patient self-reported ability to perform activities (e.g., clim
 ---
 
 ### ARISCAT (Assess Respiratory Risk in Surgical Patients in Catalonia)
-**Clinical Use:** Predicts postoperative pulmonary complications (PPC) including pneumonia, respiratory failure, and need for prolonged mechanical ventilation.
+**Clinical Use:** Predicts postoperative pulmonary complications (PPC) including pneumonia, respiratory failure, and need for prolonged mechanical ventilation. The ARISCAT incision/location input is entered separately from the RCRI surgery category because the two tools define surgical risk categories differently.
 
 **Interpretation:**
-- **<26 points:** Low risk (<5% PPC)
-- **26–44 points:** Intermediate risk (~10–15% PPC)
-- **≥45 points:** High risk (>30% PPC)
+- **<26 points:** Low risk (1.6% in-hospital PPC)
+- **26–44 points:** Intermediate risk (13.3% in-hospital PPC)
+- **≥45 points:** High risk (42.1% in-hospital PPC)
 
 Incorporates age, oxygenation status, respiratory infection history, hemoglobin level, and surgery characteristics. Used to identify patients needing enhanced pulmonary precautions and postoperative monitoring.
 
@@ -86,10 +76,12 @@ Based on: **S**noring, **T**iredness, **O**bserved apnea, **B**lood pressure (hy
 **Clinical Use:** Stratifies risk for venous thromboembolism (VTE—deep vein thrombosis and pulmonary embolism) in surgical patients to guide thromboprophylaxis decisions.
 
 **Interpretation:**
-- **0 points:** Low risk
-- **1 point:** Moderate risk
-- **2–4 points:** High risk
-- **≥5 points:** Highest risk
+- **0 points:** Lowest risk — minimal probability
+- **1–2 points:** Low risk — minimal probability
+- **3–4 points:** Moderate risk — approximately 0.7%
+- **5–6 points:** High risk — approximately 1.8%
+- **7–8 points:** High risk — approximately 4.0%
+- **≥9 points:** Highest risk — approximately 10.7%
 
 Incorporates age, BMI, varicose veins, leg swelling, hormone therapy, bed rest, recent surgery, active cancer, and history of DVT/PE. Higher risk patients require pharmacologic and/or mechanical thromboprophylaxis.
 
@@ -97,9 +89,18 @@ Incorporates age, BMI, varicose veins, leg swelling, hormone therapy, bed rest, 
 
 ## Features
 - **Real-time calculation:** All scores update automatically as you enter patient data
-- **No default values:** Clean slate for each patient assessment
+- **No default patient values:** Clean slate for each patient assessment while display preferences may persist locally
 - **Responsive design:** Works on desktop and mobile devices
+- **Persistent display preferences:** Text size and high-contrast mode are saved locally while calculator inputs reset on refresh
+- **Validation warnings:** Incomplete or out-of-range inputs are flagged before scores are displayed
+- **Copy-ready risk assessment:** Results can be copied to the clipboard, with desktop hover preview
+- **Print-friendly output:** Print output focuses on the results panel
 - **Educational tool:** Provides quick reference interpretations alongside scores
 
 ## Disclaimer
 This tool is for **educational and reference purposes only** and does not replace clinical judgment. All perioperative risk assessments should be performed by qualified healthcare professionals in the context of comprehensive patient evaluation.
+
+
+## Display preferences
+
+The app includes text-size controls and a high-contrast mode. These display settings are saved locally in the browser so they persist after refresh, while calculator inputs continue to reset on page refresh.
